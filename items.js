@@ -49,10 +49,10 @@ class Armor extends CombatItem{
     }
 }
 
-const helmet = new Armor("Iron Helmet", 25, "h01" ,75, true, "helmet", 30);
-const breastPlate = new Armor("Iron Breast Plate", 35, "bp01", 75, true, "breastPlate", 55);
-const leggings = new Armor("Iron Leggings", 30, "l01" ,75, true, "leggings", 40);
-const boots = new Armor("Iron Boots", 25, "b01", 75, true, "boots", 20);
+const helmet = new Armor("Iron Helmet", 25, "h01" ,75, true, 30, "helmet");
+const breastPlate = new Armor("Iron Breast Plate", 35, "bp01", 75, true, 55, "breastPlate");
+const leggings = new Armor("Iron Leggings", 30, "l01" ,75, true, 40, "leggings");
+const boots = new Armor("Iron Boots", 25, "b01", 75, true, 20, "boots");
 
 const sword = new Weapon("Iron Sword", 80, "s01", 75, true, 10, "sword");
 const dagger = new Weapon("Iron Dagger", 15, "d01", 75, true, 5, "dagger");
