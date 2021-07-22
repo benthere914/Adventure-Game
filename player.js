@@ -1,22 +1,60 @@
 const { ParentItem, Food, CombatItem, Weapon, Armor, helmet, breastPlate, leggings, boots, sword, dagger, fists, apple, sandwich } = require("./items")
 
 class Character {
-    constructor(name, health, hunger, weaponEquipped, armorEquipped, damageResistance) {
+    constructor(name, health, hunger, weaponEquipped, armorEquipped, damageResistance, inventory, x, y, z, locationOf) {
         this.name = name,
         this.health = health,
         this.hunger = hunger;
         this.weaponEquipped = weaponEquipped,
         this.armorEquipped = armorEquipped
-        this.damageResistance = damageResistance
+        this.damageResistance = damageResistance,
+        this.inventory = inventory,
+        this.x = x,
+        this.y = y,
+        this.z = z,
+        this.locationOf = locationOf
     }
 
-    giveDamage(amount, player) {
-        player.takeDamage(amount)
+    init(){
+        //inits the damage resistance
+        this.damageResistance = this.armorEquipped.reduce((resistance, ele) => {return resistance + ele.protection}, 0)
+        //inits the inventory to contain armor equipped
+        for (let i = 0; i  < 4; i++){if (!this.inventory.includes(this.armorEquipped[i])){this.pickUpItem(this.armorEquipped[i])}}
+        //inits the inventory to contain weapon equipped
+        if (!this.inventory.includes(this.weaponEquipped)){if (!this.weaponEquipped === fists){this.pickUpItem(this.weaponEquipped)}}
     }
 
-    takeDamage(amount) {
-        this.health -= amount
+
+    setLocation(x,y,z,location = this.locationOf){
+        //alters the location of player
+        this.x += x;
+        this.y += y;
+        this.z += z;
+        this.locationOf = location;
     }
+    //different ways that player can move
+    walkNorth(y){this.setLocation(0, y, 0)}
+    walkSouth(y){this.setLocation(0, -y, 0)}
+    walkEast(x){this.setLocation(0, x, 0)}
+    walkWest(x){this.setLocation(0, -y, 0)}
+    jump(){this.setLocation(0, 0, 1); this.setLocation(0, 0, 1);}
+    enterRoom(){this.setLocation(-20, 0, 0)}
+    //picks up item and places in inventory
+    pickUpItem(item) { this.inventory.push(item) }
+    // removes item from inventory
+    dropItem(item) {
+        for (let i = 0; i < this.inventory.length; i++){
+            if (this.inventory[i] === item){
+                this.inventory.splice(i, 1)
+            }
+        }
+        if (this.weaponEquipped === item) {this.weaponEquipped = undefined}
+    }
+    //basic combat
+    giveDamage(amount, player) {player.takeDamage(amount)}
+    takeDamage(amount) {this.health -= amount}
+
+
 
     eat(food) {
         if (food instanceof Food) {
@@ -25,15 +63,10 @@ class Character {
                 this.restoreHunger(food.hungerPoints);
                 this.dropItem(food.id);
             }
-            else {
-                console.log(`You can only eat food that you have picked up.`)
+            else {console.log(`You can only eat food that you have picked up.`)
             }
-        }
-        else {
-            console.log(`${food.name} is not food.`)
-        }
+        }else {console.log(`${food.name} is not food.`)}
     }
-
     restoreHealth(amount) { for (let i = 0; i <= amount && this.health < 100; i++) { this.health++; } }
     restoreHunger(amount) { for (let i = 0; i <= amount && this.hunger < 100; i++) { this.hunger++; } }
 
@@ -53,7 +86,7 @@ class Character {
         this.damageResistance -= armorPiece.protection;
         this.armorEquipped[index] = undefined;
     }
-
+    //this is the method that is called on either a weapon or piece of armor
     equip(item) {
         if (item instanceof Weapon) {
             if (this.weaponEquipped === item) {
@@ -81,22 +114,24 @@ class Character {
 
 
 class Player extends Character {
-    constructor(name, health, hunger, weaponEquipped = fists, armorEquipped = [undefined, undefined, undefined, undefined], inventory = [], damageResistance) {
-        super(name, health, hunger, weaponEquipped, armorEquipped, damageResistance);
-        this.inventory = inventory;
+    constructor(name, health, hunger, weaponEquipped = fists, armorEquipped = [undefined, undefined, undefined, undefined], inventory = [], damageResistance, x,y,z,locationOf) {
+        super(name, health, hunger, weaponEquipped, armorEquipped, damageResistance, inventory, x,y,z,locationOf);
     }
-    pickUpItem(item) { this.inventory.push(item) }
-    dropItem(itemId) { this.inventory.forEach((ele, i) => { if (ele.id === itemId) { this.inventory.splice(i, 1) } }) }
+
 }
+
+
+// const ben = new Player("Ben", 100, 100, sword, [helmet, breastPlate, leggings, boots] );
+
 module.exports = {Character, Player}
 
 
-// const ben = new Player("Ben", 100, 100);
 // const bob = new Player("Bob", 100, 100);
 // for (let i = 0; i < 10; i++){
 // ben.giveDamage(ben.weaponEquipped.damage, bob)
 // console.log(bob.health)
 // }
+// ben.init()
 // console.log(ben)
 // bob.giveDamage(20, ben);
 // ben.pickUpItem(helmet)
@@ -105,12 +140,12 @@ module.exports = {Character, Player}
 // ben.pickUpItem(boots)
 
 // ben.pickUpItem(sword)
-// console.log(ben.inventory);
+// console.log(bob.inventory);
 // ben.equip(helmet);
 // console.log(ben)
-
+// bob.dropItem(helmet)
 // ben.equip(helmet);
-// console.log(ben)
+// console.log(bob.inventory)
 
 // console.log(helmet instanceof Armor)
 // ben.equip(breastPlate);
