@@ -1,4 +1,4 @@
-const { ParentItem, Food, CombatItem, Weapon, Armor, helmet, breastPlate, leggings, boots, sword, dagger, apple, sandwich } = require("./items")
+const { ParentItem, Food, CombatItem, Weapon, Armor, helmet, breastPlate, leggings, boots, sword, dagger, fists, apple, sandwich } = require("./items")
 
 class Character {
     constructor(name, health, hunger, weaponEquipped, armorEquipped, damageResistance) {
@@ -11,7 +11,7 @@ class Character {
     }
 
     giveDamage(amount, player) {
-        player.takeDamage(amount) 
+        player.takeDamage(amount)
     }
 
     takeDamage(amount) {
@@ -24,11 +24,11 @@ class Character {
                 this.restoreHealth(food.healthPoints);
                 this.restoreHunger(food.hungerPoints);
                 this.dropItem(food.id);
-            } 
+            }
             else {
                 console.log(`You can only eat food that you have picked up.`)
             }
-        } 
+        }
         else {
             console.log(`${food.name} is not food.`)
         }
@@ -49,9 +49,9 @@ class Character {
             console.log(`The ${armorPiece.name} is not in your inventory`)
         }
     }
-    unequipArmor(armorPiece, index) { 
-        this.damageResistance -= armorPiece.protection; 
-        this.armorEquipped[index] = undefined; 
+    unequipArmor(armorPiece, index) {
+        this.damageResistance -= armorPiece.protection;
+        this.armorEquipped[index] = undefined;
     }
 
     equip(item) {
@@ -81,19 +81,22 @@ class Character {
 
 
 class Player extends Character {
-    constructor(name, health, hunger, weaponEquipped = undefined, armorEquipped = [undefined, undefined, undefined, undefined], inventory = [], damageResistance) {
+    constructor(name, health, hunger, weaponEquipped = fists, armorEquipped = [undefined, undefined, undefined, undefined], inventory = [], damageResistance) {
         super(name, health, hunger, weaponEquipped, armorEquipped, damageResistance);
         this.inventory = inventory;
     }
     pickUpItem(item) { this.inventory.push(item) }
     dropItem(itemId) { this.inventory.forEach((ele, i) => { if (ele.id === itemId) { this.inventory.splice(i, 1) } }) }
 }
+module.exports = {Character, Player}
 
 
-
-const ben = new Player("Ben", 100, 100);
-const bob = new Player("Bob", 100, 100);
-// console.log(ben)
+// const ben = new Player("Ben", 100, 100);
+// const bob = new Player("Bob", 100, 100);
+// for (let i = 0; i < 10; i++){
+// ben.giveDamage(ben.weaponEquipped.damage, bob)
+// console.log(bob.health)
+// }
 // console.log(ben)
 // bob.giveDamage(20, ben);
 // ben.pickUpItem(helmet)

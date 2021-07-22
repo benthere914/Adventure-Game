@@ -56,8 +56,9 @@ const boots = new Armor("Iron Boots", 25, "b01", 75, true, 20, "boots");
 
 const sword = new Weapon("Iron Sword", 80, "s01", 75, true, 10, "sword");
 const dagger = new Weapon("Iron Dagger", 15, "d01", 75, true, 5, "dagger");
+const fists = new Weapon("Just Regular punching fists", NaN, "fists", Infinity, true, 2, "fists" )
 
 const apple = new Food("Red Apple", 2, "apple01", 1, 2);
 const sandwich = new Food("BLT", 3.5, "sandwich01", 2, 4)
 
-module.exports = {ParentItem, Food, CombatItem, Weapon, Armor, helmet, breastPlate, leggings, boots, sword, dagger, apple, sandwich }
+module.exports = {ParentItem, Food, CombatItem, Weapon, Armor, helmet, breastPlate, leggings, boots, sword, dagger, fists, apple, sandwich }
