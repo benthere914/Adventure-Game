@@ -12,7 +12,7 @@ function keyCheck(print = false){
             if (key.ctrl && key.name == 'c') {
                 process.stdin.pause();
             }
-            if (key.name !== 'return' ) {
+            if (key.name !== 'return' && key.name !== 'enter') {
                 if (print){
                     console.log('got "keypress"', key);
                 }
@@ -21,7 +21,7 @@ function keyCheck(print = false){
                     process.stdout.write(key.name);
                 }
             }
-            if (key.name === 'return') {
+            if (key.name === 'return' || key.name === 'enter') {
                 output = output.join("");
                 console.log("");
                 console.log(`you typed ${output}`);
@@ -45,15 +45,18 @@ function getClick(output = false){
     });
     process.on('exit', function () {keypress.disableMouse(process.stdout);});
 }
-async function test(variable) {
-    variable = await keyCheck()
-    variable = await getClick()
-    return variable
+// async function test(variable) {
+//     variable = await keyCheck()
+//     variable = await getClick()
+//     return variable
+// }
+// async function testb(params) {
+//     await console.log(test())
+// }
+// testb()
+
+async function getStr(...rest) {
+    const str = await keyCheck(1)
 }
-async function testb(params) {
-    await console.log(test())
-}
-testb()
 
-
-
+getStr()
