@@ -6,7 +6,7 @@ function keyCheck(character, output = false){
   process.stdin.setRawMode(true);
 
   process.stdin.resume();
-process.stdin.on('keypress', function (ch, key) {
+  process.stdin.on('keypress', function (ch, key) {
   if (output){
   console.log('got "keypress"', key);
   }
@@ -20,25 +20,57 @@ process.stdin.on('keypress', function (ch, key) {
 });}
 
 
-function getClick(showCoord){
+function getClick(){
   process.stdin.setRawMode(true);
   process.stdin.resume();
   keypress.enableMouse(process.stdout);
   process.stdin.on('mousepress', function (info) {
-    if (showCoord){console.log(`x: ${info.x}, y: ${info.y}`)}
-    process.stdin.pause();
-    // console.log(info)
-    if (info.button){return info.button}
-    if (info.scroll){return info.scroll}
-  // console.log('got "mousepress" event at %d x %d', info.x, info.y);
+  console.log(info)
+  console.log('got "mousepress" event at %d x %d', info.x, info.y);
   });
-  // if (true){
   process.on('exit', function () {
-  // disable mouse on exit, so that the state
-  // is back to normal for the terminal
   keypress.disableMouse(process.stdout);
+  }
+  );
+}
+
+function getChar(variable){
+  process.stdin.resume();
+  process.stdin.on('keypress', function (ch, key) {
+    if (key && key.ctrl && key.name == 'c') {process.stdin.pause();}
+    if (key){process.stdin.pause();console.log(key);variable = key.name; return}
   });
 }
-getClick(true)
-keyCheck("up")
+
+async function getStr(){
+  let char = await getChar(char);
+  console.log(char);
+}
+
+// let p = new Promise((resolve, reject) => {
+//   let str = []
+//   process.stdin.resume();
+//   process.stdin.on('keypress', function (ch, key) {
+//     if (key && key.ctrl && key.name == 'c') {
+//       reject("canceled");
+//       process.stdin.pause();
+//     }
+//     else if (key){
+//       process.stdin.pause();
+//       str.push(key.name)
+//       console.log(key);
+//       variable = key.name;
+//       resolve(str)
+//     }
+//   });
+// })
+// let ans;
+// p.then((str) => {str.pop();str = str.join("");ans = str;}).catch((failed) => {console.log(failed)})
+  // let check = true
+  // while (check){
+  //   if (ans){check = false}
+
+  // }
+  keyCheck()
+  getClick(true)
 module.exports = {keyCheck, getClick};
