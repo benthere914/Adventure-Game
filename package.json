@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
-  "directory": {"test": "test"},
+  "directory": {
+    "test": "test"
+  },
   "scripts": {
     "test": "mocha"
   },
@@ -20,6 +22,7 @@
   "homepage": "https://github.com/benthere914/Adventure-Game#readme",
   "dependencies": {
     "chai": "^4.3.4",
+    "keypress": "^0.2.1",
     "mocha": "^9.0.2"
   }
 }
