@@ -1,7 +1,7 @@
-const { ParentItem, Food, CombatItem, Weapon, Armor, helmet, breastPlate, leggings, boots, sword, dagger, fists, apple, sandwich } = require("./items")
+// const { ParentItem, Food, CombatItem, Weapon, Armor, helmet, breastPlate, leggings, boots, sword, dagger, fists, apple, sandwich } = require("./items")
 
 class Character {
-    constructor(name, health, hunger, weaponEquipped, armorEquipped, damageResistance, inventory, x, y, z, locationOf) {
+    constructor(name, health, hunger, weaponEquipped = null, armorEquipped = [null, null, null, null], damageResistance = 0, inventory = [], x, y, z, locationOf) {
         this.name = name,
         this.health = health,
         this.hunger = hunger;
@@ -27,16 +27,16 @@ class Character {
 
     setLocation(x,y,z,location = this.locationOf){
         //alters the location of player
-        this.x += x;
-        this.y += y;
-        this.z += z;
+        if (x >= -20 && x <= 20){this.x += x;}
+        if (y >= -20 && x <= 20){this.y += y;}
+        if (z >= 0 && z <= 10) {this.z += z;}
         this.locationOf = location;
     }
     //different ways that player can move
     walkNorth(y){this.setLocation(0, y, 0)}
     walkSouth(y){this.setLocation(0, -y, 0)}
-    walkEast(x){this.setLocation(0, x, 0)}
-    walkWest(x){this.setLocation(0, -y, 0)}
+    walkEast(x){this.setLocation(x, 0, 0)}
+    walkWest(x){this.setLocation(x, 0, 0)}
     jump(){this.setLocation(0, 0, 1); this.setLocation(0, 0, 1);}
     enterRoom(){this.setLocation(-20, 0, 0)}
     //picks up item and places in inventory
@@ -48,7 +48,7 @@ class Character {
                 this.inventory.splice(i, 1)
             }
         }
-        if (this.weaponEquipped === item) {this.weaponEquipped = undefined}
+        if (this.weaponEquipped[0] === item) {this.weaponEquipped[0] = null}
     }
     //basic combat
     giveDamage(amount, player) {player.takeDamage(amount)}
@@ -70,8 +70,8 @@ class Character {
     restoreHealth(amount) { for (let i = 0; i <= amount && this.health < 100; i++) { this.health++; } }
     restoreHunger(amount) { for (let i = 0; i <= amount && this.hunger < 100; i++) { this.hunger++; } }
 
-    equipWeapon(weapon) { if (this.inventory.includes(weapon)) { this.weaponEquipped = weapon; } }
-    unequipWeapon() { this.weaponEquipped = undefined }
+    equipWeapon(weapon) { if (this.inventory.includes(weapon)) { this.weaponEquipped[0] = weapon; } }
+    unequipWeapon() { this.weaponEquipped[0] = null }
 
     equipArmor(armorPiece, index) {
         if (this.inventory.includes(armorPiece)){
@@ -114,16 +114,28 @@ class Character {
 
 
 class Player extends Character {
-    constructor(name, health, hunger, weaponEquipped = fists, armorEquipped = [undefined, undefined, undefined, undefined], inventory = [], damageResistance, x,y,z,locationOf) {
+    constructor(name, health, hunger, weaponEquipped = [], armorEquipped, inventory, damageResistance, x,y,z, locationOf) {
         super(name, health, hunger, weaponEquipped, armorEquipped, damageResistance, inventory, x,y,z,locationOf);
     }
-
 }
+
+
+class Merchant extends Character{
+    constructor(name, health, hunger, inventory, x,y,z,locationOf){
+        super(name, health, hunger, inventory, x, y, z, locationOf)
+
+    }
+}
+
+
+
+
+
 
 
 // const ben = new Player("Ben", 100, 100, sword, [helmet, breastPlate, leggings, boots] );
 
-module.exports = {Character, Player}
+module.exports = {Character, Player, Merchant}
 
 
 // const bob = new Player("Bob", 100, 100);
