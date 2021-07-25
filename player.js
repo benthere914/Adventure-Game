@@ -1,5 +1,8 @@
 // const { ParentItem, Food, CombatItem, Weapon, Armor, helmet, breastPlate, leggings, boots, sword, dagger, fists, apple, sandwich } = require("./items")
 
+const { Container } = require("./container");
+const { WorldCell } = require("./world");
+
 class Character {
     constructor(name, health, hunger, weaponEquipped = null, armorEquipped = [null, null, null, null], damageResistance = 0, inventory = [], x, y, z, locationOf) {
         this.name = name,
@@ -24,30 +27,71 @@ class Character {
         if (!this.inventory.includes(this.weaponEquipped)){if (!this.weaponEquipped === fists){this.pickUpItem(this.weaponEquipped)}}
     }
 
+    displayCoord(){
+        console.log(`x: ${this.x}`);
+        console.log(`y: ${this.y}`);
+        console.log(`z: ${this.z}`);
 
+    }
     setLocation(x,y,z,location = this.locationOf){
         //alters the location of player
-        if (x >= -20 && x <= 20){this.x += x;}
-        if (y >= -20 && x <= 20){this.y += y;}
-        if (z >= 0 && z <= 10) {this.z += z;}
+        if (x >= location.westBoundary && x <= location.eastBoundary){this.x += x;}
+        if (y >= location.southBoundary && x <= location.northBoundary){this.y += y;}
+        if (z >= location.bottomBoundary && z <= location.topBoundary) {this.z += z;}
         this.locationOf = location;
+    }
+    position(){
+        return [this.x, this.y, this.z]
     }
     //different ways that player can move
     walkNorth(y){this.setLocation(0, y, 0)}
     walkSouth(y){this.setLocation(0, -y, 0)}
     walkEast(x){this.setLocation(x, 0, 0)}
-    walkWest(x){this.setLocation(x, 0, 0)}
+    walkWest(x){this.setLocation(-x, 0, 0)}
     jump(){this.setLocation(0, 0, 1); this.setLocation(0, 0, 1);}
-    enterRoom(){this.setLocation(-20, 0, 0)}
-    //picks up item and places in inventory
-    pickUpItem(item) { this.inventory.push(item) }
-    // removes item from inventory
-    dropItem(item) {
-        for (let i = 0; i < this.inventory.length; i++){
-            if (this.inventory[i] === item){
-                this.inventory.splice(i, 1)
+    enterRoom(room){
+        // console.log(this.locationOf)
+        if (this.locationOf.doors.reduce((bool, ele, i) => {
+            if (bool) {return true}
+            else {
+                if ((ele.x - this.x <= 3) && (ele.y - this.y <= 3) && (ele.z - this.z <= 3)){
+                   return true 
+                }
             }
+        }, false)){
+            console.log(123)
+            this.locationOf = room;
+            room.addCharacters(this);
+        }else {console.log("There is no door nearby")}
+    
+        
+        
+        
         }
+    //picks up item and places in inventory
+    pickUpItem(item, location) {
+        if(location.items.includes(item)){
+            this.inventory.push(item);
+            location.items.forEach((ele, i) => {
+                if (ele === item){
+                    location.items.splice(i, 1)
+                }
+            });
+        }
+    }
+    // removes item from inventory
+    dropItem(item, location) {
+        if (this.inventory.includes(item)){
+            this.inventory.forEach((ele, i) => {
+                if (item === ele){
+                    this.inventory.splice(i, 1)
+                }
+            })
+            // addItem.call(location, item);
+            location.addItem(item);
+
+        }
+        
         if (this.weaponEquipped[0] === item) {this.weaponEquipped[0] = null}
     }
     //basic combat

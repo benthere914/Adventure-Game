@@ -6,8 +6,8 @@ class ParentItem{
         this.value = value;
         this.id = id;
     }
-
 }
+
 
 class Food extends ParentItem{
     constructor(name, value, id, healthPoints, hungerPoints){
