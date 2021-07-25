@@ -19,13 +19,7 @@ const area1 = new WorldCell("starting Area", 50, 50, 15);
 const area2 = new WorldCell("Weapons Shop", 50, 50, 15);
 const area3 = new WorldCell("Armor Shop", 50, 50, 15);
 const area4 = new WorldCell("Food shop", 50, 50, 15);
-area1.addDoor(4, 8, area1.westBoundary, area1.northBoundary, 0, area2);
-area1.addDoor(4, 8, 0, area2.northBoundary, 0, area3);
-area1.addDoor(4, 8, area1.eastBoundary, area2.northBoundary, 0, area4);
-area2.addDoor(4, 8, 0, area2.southBoundary, 0, area1);
-area3.addDoor(4, 8, 0, area2.southBoundary, 0, area1);
-area4.addDoor(4, 8, 0, area2.southBoundary, 0, area1);
-console.log();
+
 
 
 
@@ -50,25 +44,26 @@ const sandwich = new Food("BLT", 3.5, "sandwich01", 2, 4);
 const container1 = new Container(12, 12, 0, 100);
 
 //init the play area
-area1.addPortal(area2, area3, area4);
-area2.addPortal(area1);
-area3.addPortal(area1);
-area4.addPortal(area1);
 
-area1.addCharacters(player1, player2, player3, player4);
-area2.addCharacters(Merchant1);
-area3.addCharacters(Merchant2);
-area4.addCharacters(Merchant3);
-// console.log(player1.locationOf)
 
-// player1.displayCoord()
-// console.log("")
-// player1.displayCoord()
-console.log(area1.doors)
-// console.log(player1.locationOf.name);
-// player1.walkNorth(50);
-// player1.walkEast(50)
-// player1.enterRoom(area3);
-// console.log(player1.locationOf.name)
+area1.addDoor(4, 8, area1.westBoundary, area1.northBoundary, 0, area2);
+area1.addDoor(4, 8, 0, area2.northBoundary, 0, area3);
+area1.addDoor(4, 8, area1.eastBoundary, area2.northBoundary, 0, area4);
+area2.addDoor(4, 8, 0, area2.southBoundary, 0, area1);
+area3.addDoor(4, 8, 0, area2.southBoundary, 0, area1);
+area4.addDoor(4, 8, 0, area2.southBoundary, 0, area1);
 
-// console.log(player1)
+
+area1.addCharacters(0, -25, 0, player1, player2, player3, player4);
+area2.addCharacters(10, 10, 0, Merchant1);
+area3.addCharacters(10, 10, 0, Merchant2);
+area4.addCharacters(10, 10, 0, Merchant3);
+
+
+player1.displayCoord()
+player1.walkNorth(50);
+player1.enterRoom()
+
+
+
+

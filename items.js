@@ -6,6 +6,13 @@ class ParentItem{
         this.value = value;
         this.id = id;
     }
+
+    init(locationOf, x, y, z){
+        this.locationOf = locationOf; 
+        this.x = x; 
+        this.y = y;
+        this.z = z;
+    }
 }
 
 
@@ -25,13 +32,19 @@ class CombatItem extends ParentItem{
         this.type = type;
     }
     loseDurabilty(amount){
-        for(let i = 0; i <= amount && this.durability > 0; i++){this.durability--;}
-        if(this.durability === 0) this.break()
+        for(let i = 0; i <= amount && this.durability > 0; i++){
+            this.durability--;
+        }
+        if(this.durability === 0) {
+            this.break();
+        }
     }
     break(){
         this.useable = false;
     }
-    restore(){this.useable = true;}
+    restore(){
+        this.useable = true;
+    }
 }
 
 class Weapon extends CombatItem{

@@ -27,78 +27,94 @@ class Character {
         if (!this.inventory.includes(this.weaponEquipped)){if (!this.weaponEquipped === fists){this.pickUpItem(this.weaponEquipped)}}
     }
 
+    isCloseTo(obj){
+        return ((this.locationOf.name === obj.locationOf.name) && (Math.abs(this.x - obj.x) <= 3) && (Math.abs(this.y - obj.y) <= 3) && (Math.abs(this.z - obj.z) <= 3))
+    }
+
     displayCoord(){
         console.log(`x: ${this.x}`);
         console.log(`y: ${this.y}`);
         console.log(`z: ${this.z}`);
+        console.log(`Location: ${this.locationOf.name}`)
 
     }
-    setLocation(x,y,z,location = this.locationOf){
+    setLocation(x,y,z, msg, location = this.locationOf){
         //alters the location of player
-        if (x >= location.westBoundary && x <= location.eastBoundary){this.x += x;}
-        if (y >= location.southBoundary && x <= location.northBoundary){this.y += y;}
-        if (z >= location.bottomBoundary && z <= location.topBoundary) {this.z += z;}
+        {for (let i = 0; i < x && this.x < location.eastBoundary; i++){this.x++;}};
+        {for (let i = 0; i < -x && this.x > location.westBoundary; i++){this.x--;}}
+        {for (let i = 0; i < y && this.y < location.northBoundary; i++){this.y++;}}
+        {for (let i = 0; i < -y && this.y > location.southBoundary ;i++){this.y--;}}
+        {for (let i = 0; i < z && this.z > location.bottomBoundary && this.z < location.topBoundary; i++){this.z++;}}
         this.locationOf = location;
+        console.log(msg)
+        this.displayCoord();
     }
     position(){
         return [this.x, this.y, this.z]
     }
     //different ways that player can move
-    walkNorth(y){this.setLocation(0, y, 0)}
-    walkSouth(y){this.setLocation(0, -y, 0)}
-    walkEast(x){this.setLocation(x, 0, 0)}
-    walkWest(x){this.setLocation(-x, 0, 0)}
+    walkNorth(y){this.setLocation(0, y, 0, `${this.name} has walked north`)}
+    walkSouth(y){this.setLocation(0, -y, 0, `${this.name} has walked south`)}
+    walkEast(x){this.setLocation(x, 0, 0, `${this.name} has walked east`)}
+    walkWest(x){this.setLocation(-x, 0, 0, `${this.name} has walked west`)}
     jump(){this.setLocation(0, 0, 1); this.setLocation(0, 0, 1);}
-    enterRoom(room){
-        // console.log(this.locationOf)
+    //enters a room if I am within three units to a door
+    enterRoom(x = 0, y = 0, z = 0){
+        let index;
         if (this.locationOf.doors.reduce((bool, ele, i) => {
-            if (bool) {return true}
-            else {
-                if ((ele.x - this.x <= 3) && (ele.y - this.y <= 3) && (ele.z - this.z <= 3)){
-                   return true 
-                }
+            if (this.isCloseTo(ele)){
+                index = i; 
+                return true
             }
-        }, false)){
-            console.log(123)
-            this.locationOf = room;
-            room.addCharacters(this);
-        }else {console.log("There is no door nearby")}
-    
-        
-        
-        
+            else {
+                return bool
+            }
+            }, false)
+            ){  console.log(`Entered ${this.locationOf.doors[index].boundLocation.name}`)
+                console.log(`${this.name} new coordinates: `)
+                this.locationOf.doors[index].boundLocation.addCharacters(x, y, z, this);
+                this.displayCoord()
+            }
         }
+
     //picks up item and places in inventory
-    pickUpItem(item, location) {
+    pickUpItem(item, location = this.locationOf) {
         if(location.items.includes(item)){
+            location.removeItem(item);
             this.inventory.push(item);
-            location.items.forEach((ele, i) => {
-                if (ele === item){
-                    location.items.splice(i, 1)
-                }
-            });
+            console.log(`${item.name} added to ${this.name}'s inventory`)
         }
     }
     // removes item from inventory
-    dropItem(item, location) {
+    dropItem(item, location = this.locationOf) {
         if (this.inventory.includes(item)){
             this.inventory.forEach((ele, i) => {
                 if (item === ele){
                     this.inventory.splice(i, 1)
                 }
             })
-            // addItem.call(location, item);
+            console.log(`${item.name} has been removed from ${this.name}'s inventory`)
             location.addItem(item);
-
         }
-        
         if (this.weaponEquipped[0] === item) {this.weaponEquipped[0] = null}
     }
+
+    displayItems(){
+        console.log(`${this.name} currently has`, this.inventory)
+    }
     //basic combat
-    giveDamage(amount, player) {player.takeDamage(amount)}
-    takeDamage(amount) {this.health -= amount}
-
-
+    giveDamage(amount, player) {
+        if (this.locationOf.name === player.locationOf.name){
+            console.log(this.locationOf.name, player.locationOf.name)
+            player.takeDamage(amount)
+        }else {
+            console.log(`${player.name} is not able to be attacked right now`)
+        }
+    }
+          
+    takeDamage(amount) {
+        this.health -= amount
+    }
 
     eat(food) {
         if (food instanceof Food) {
@@ -109,18 +125,34 @@ class Character {
             }
             else {console.log(`You can only eat food that you have picked up.`)
             }
-        }else {console.log(`${food.name} is not food.`)}
+        }else {
+            console.log(`${food.name} is not food.`)
+        }
     }
-    restoreHealth(amount) { for (let i = 0; i <= amount && this.health < 100; i++) { this.health++; } }
-    restoreHunger(amount) { for (let i = 0; i <= amount && this.hunger < 100; i++) { this.hunger++; } }
+    restoreHealth(amount) { 
+        for (let i = 0; i <= amount && this.health < 100; i++) { 
+            this.health++; 
+        } 
+    }
+    restoreHunger(amount) { 
+        for (let i = 0; i <= amount && this.hunger < 100; i++) { 
+            this.hunger++; 
+        } 
+    }
 
-    equipWeapon(weapon) { if (this.inventory.includes(weapon)) { this.weaponEquipped[0] = weapon; } }
-    unequipWeapon() { this.weaponEquipped[0] = null }
+    equipWeapon(weapon) { 
+        if (this.inventory.includes(weapon)) { 
+            this.weaponEquipped[0] = weapon; 
+        } 
+    }
+    unequipWeapon() { 
+        this.weaponEquipped[0] = null 
+    }
 
     equipArmor(armorPiece, index) {
         if (this.inventory.includes(armorPiece)){
             this.armorEquipped[index] = armorPiece;
-            this.damageResistance += armorPiece.protection
+            this.damageResistance += armorPiece.protection;
         }
         else {
             console.log(`The ${armorPiece.name} is not in your inventory`)
@@ -165,60 +197,11 @@ class Player extends Character {
 
 
 class Merchant extends Character{
-    constructor(name, health, hunger, inventory, x,y,z,locationOf){
+    constructor(name, health, hunger, inventory, x,y,z, locationOf){
         super(name, health, hunger, inventory, x, y, z, locationOf)
 
     }
 }
 
 
-
-
-
-
-
-// const ben = new Player("Ben", 100, 100, sword, [helmet, breastPlate, leggings, boots] );
-
 module.exports = {Character, Player, Merchant}
-
-
-// const bob = new Player("Bob", 100, 100);
-// for (let i = 0; i < 10; i++){
-// ben.giveDamage(ben.weaponEquipped.damage, bob)
-// console.log(bob.health)
-// }
-// ben.init()
-// console.log(ben)
-// bob.giveDamage(20, ben);
-// ben.pickUpItem(helmet)
-// ben.pickUpItem(breastPlate)
-// ben.pickUpItem(leggings)
-// ben.pickUpItem(boots)
-
-// ben.pickUpItem(sword)
-// console.log(bob.inventory);
-// ben.equip(helmet);
-// console.log(ben)
-// bob.dropItem(helmet)
-// ben.equip(helmet);
-// console.log(bob.inventory)
-
-// console.log(helmet instanceof Armor)
-// ben.equip(breastPlate);
-// ben.equip(leggings);
-// ben.equip(boots);
-
-// console.log(ben);
-// ben.equip(sword);
-// console.log(ben);
-// console.log(ben.health)
-// ben.eat(apple)
-// ben.eat(sword)
-// ben.equipWeapon(sword)
-// console.log(ben.health)
-// ben.unequipWeapon();
-// console.log("pause")
-// ben.dropItem("apple01")
-// ben.heal(25)
-// console.log(ben.inventory)
-// console.log(ben)

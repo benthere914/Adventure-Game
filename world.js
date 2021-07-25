@@ -4,12 +4,11 @@ const { Door } = require("./container")
 
 // const {ParentItem, Food, CombatItem, Weapon, Armor} = require('./items')
 class WorldCell{
-    constructor(name, length, width, top, bottom = 0, doors = [], portals = [], characters = [], items = []){
+    constructor(name, length, width, top, bottom = 0, doors = [], characters = [], items = []){
         this.name = name,
         this.length = length,
         this.width = width,
         this.doors = doors,
-        this.portals = portals,
         this.characters = characters,
         this.items = items,
         this.containers = [],
@@ -21,13 +20,13 @@ class WorldCell{
         this.bottomBoundary = bottom
     }
 
-    addCharacters(...character){
+    addCharacters(x,y,z,...character){
         character.forEach((char) => {
             this.characters.push(char)
-            char.x = 0;
-            char.y = -20;
-            char.z = 0;
-            char.locationOf = this
+            char.x = x;
+            char.y = y;
+            char.z = z;
+            char.locationOf = this;
         })
     }
 
@@ -40,10 +39,42 @@ class WorldCell{
     }
 
     addDoor(width, height, x, y, z, boundLocation){
-        this.doors.push(new Door(width, height, x, y, z, boundLocation))
+        this.doors.push(new Door(width, height, x, y, z, this, boundLocation))
     }
 
-    addPortal(...portals){portals.forEach((portal) => {this.portals.push(portal)})}
+    addContainer(container){
+        this.containers.push(container)
+    }
+    
+    addItem(item, player){
+        if (player){
+            item.init(player.locationOf,player.x, player.y, player.z)
+        }
+        this.items.push(item);
+        console.log(`${item.name} has been added to ${this.name}`);
+    }
+
+    removeItem(item){
+        this.items.forEach((ele, i) => {
+            if (ele === item){
+                this.items.splice(i, 1); 
+                console.log(`${item.name} has been removed from ${this.name}`)
+            }
+        });
+    }
+    
+    displayContainer(container){
+        this.containers.forEach((ele) => {
+            if (container === ele){
+                console.log(ele)
+            }
+        })
+    }
+
+    displayItems(){
+        console.log(`${this.name} currently has`, this.items)
+    }
+
     displayBoundaries(){
         console.log("north", this.northBoundary);
         console.log("south", this.southBoundary);
@@ -52,27 +83,6 @@ class WorldCell{
 
     }
 
-    addContainer(container){this.containers.push(container)}
-    addItem(item){this.items.push(item)}
-    displayContainer(container){
-        this.containers.forEach((ele) => {if (container === ele){console.log(ele)}})
-    }
-    displayItems(){
-        console.log(this.items)
-    }
 }
-
-
-
-
-
-// const ben = new Player("Ben", 100, 100, sword, [helmet, breastPlate, leggings, boots] );
-// ben.init()
-// let room1 = new World("Merchant bobs store", 25, 25, 9, [], []);
-// room1.addCharacter(ben)
-// ben.walkNorth(5);
-// ben.walkEast(17)
-// console.log(room1)
-
 
 module.exports = {WorldCell}
